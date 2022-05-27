@@ -1,0 +1,42 @@
+input: '11*1'
+blank: ' '
+start state: right
+table:
+  right: #ставим флаг для результата '='
+    1 : R
+    '*' : R
+    ' ' : {write: '=', L: toleftnum}
+  toleftnum: # ищем разделитель. чтобы взять 1 из левого
+    1  : L
+    '*' : {L: carry}
+  carry: # берем оставшиеся единицы левого множителя
+    a: L  
+    1: {write: a, R: torightdigit}
+    ' ': {R: clean}
+  torightdigit: #идем до единицы правого множителя, помечаем ее
+    a: R
+    1: {write: b, R: toRes}
+    '*': R
+    '=': {L: return}
+  
+  toRes: # доходим до знака "=" 
+    1: R
+    '=' : {R: create1}
+  create1: # справа от него ставим 1
+    ' ' : {write: 1,L: copysecond}
+    1: R
+  copysecond: # возвращаемся до помеченной и забираем еще
+    '=' : L # когда единицы в правом мн-ле закончатся
+    1: L # в torightdigit получим "=", шагнем влево 
+    b : {R: torightdigit}
+  return: # и начнем восстанавливать правый множитель
+    b: {write: 1, L}
+    '*': {L: carry}  #ищем левый мн-ль
+    # если  вместо 1 в левом мн-ле находим границу, то стираем
+  clean:
+    a: {write: ' ',R}
+    '*': {write: ' ',R}
+    1: {write: ' ',R}
+    '=': {write: ' ',R: done}
+  done:
+

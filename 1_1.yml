@@ -1,0 +1,21 @@
+
+input: '111+1'
+blank: ' '
+start state: right
+table:
+  # scan to the +
+  right:
+    1: R
+    '+'  : {write: 1,R: torightend}#заменили + на 1
+    #дошли до знака + и заменили его на 1,
+  torightend:
+    1: R
+    ' ': {write: ' ',L: del}
+  #дошли до конца справа, перешли в del, сделав шаг влево
+  del:
+    1 : {write: ' ',L: ret}
+  #удалили 1 символ и возвращаем каретку
+  ret:
+    ' ': {write: ' ', R: done}
+    1      : {write: 1, L}
+  done:
