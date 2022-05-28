@@ -1,0 +1,45 @@
+input: '011101 101'
+blank: ' '
+start state: start
+table:
+  start: # ставим границу слева
+    [1, 0]: {L}
+    ' ': {write: '#', R: setrightbound}
+  setrightbound:
+    [1, 0]: {R}
+    ' ': {R: setrightbound2}
+  setrightbound2: # ставим границу слева
+    [1, 0]: {R: setrightbound}
+    ' ': {write: '*', L: goToTheBegin}
+  goToTheBegin: # идем до границы слева
+    [1, 0, 'I', 'O', ' ']: {L}
+    '#': {R: change}
+  change: # постепенная замена
+    ['I', 'O']: {R}
+    1: {write: 'I', R: nextWord}
+    0: {write: 'O', R: nextWord}
+    ' ': {L: maskWord} # слово оказалось короче другого
+    '*': {L: goToTheBegin} # дошли до правого конца
+  nextWord:
+    [1, 0]: {R}
+    ' ': {R: change}
+    '*': {L: goToTheBegin} # достигли правой границы
+  maskWord: # помечаем верное искомое слово
+    'I': {write: 'B', L}
+    'O': {write: 'A', L}
+    ' ': {write: '&', L: clearLeft}
+    '#': {write: '&', R: clearRight}
+  clearLeft:
+    ' ': {L}
+    [1, 0, 'I', 'O']: {write: ' ', L}
+    '#': {write: ' ', R: clearRight}
+  clearRight:
+    [' ', 'A', 'B', '&']: {R}
+    [1, 0, 'I', 'O']: {write: ' ', R}
+    '*': {write: ' ', L: unmaskWord}
+  unmaskWord: # возвращаем слово
+    ' ': {L}
+    'A': {write: 0, L}
+    'B': {write: 1, L}
+    '&': {write: ' ', R: done}
+  done:
