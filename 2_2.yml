@@ -1,0 +1,72 @@
+input: '{()[]}())[]'
+blank: ' '
+start state: start
+table:
+  start:
+    '(': {R: findparentheses}
+    '{': {R: findcurlbr}
+    '[': {R: findsqbr}
+    ')': {R: error}
+    '}': {R: error}
+    ']': {R: error}
+    '$': R
+    ' ': {write: 'Y', L: cleanleft}
+  findparentheses:
+    ')': {write: '$', L: deleteLeft}
+    ['(', '$']: {R}
+    ' ': {L: error}
+    '{': {R: findcurlbr}
+    '[': {R: findsqbr}
+    ['}', ']']: {L: error}
+  findcurlbr:
+    '}': {write: '$', L: deleteLeft}
+    ['{', '$']: {R}
+    ' ': {L: error}
+    '(': {R: findparentheses}
+    '[': {R: findsqbr}
+    [')', ']']: {L: error}
+  findsqbr:
+    ']': {write: '$', L: deleteLeft}
+    ['[', '$']: {R}
+    ' ': {L: error}
+    '{': {R: findcurlbr}
+    '(': {R: findparentheses}
+    ['}', ')']: {L: error}
+  deleteLeft:
+    '$': {L}
+    ['(', '{', '[']: {write: '$', L: tobegin}
+  tobegin:
+    ['(', '{', '[', ')', '}', ']', '$']: {L}
+    ' ': {R: start}
+  error:
+    ['(', '{', '[', ')', '}', ']', '$', ' ']: {write: N, L: cleanleft}
+  
+  cleanleft: # очистка слева
+    '(': {write: ' ', L}
+    '{': {write: ' ', L}
+    '[': {write: ' ', L}
+    '$': {write: ' ', L}
+    ')': {write: ' ', L}
+    '}': {write: ' ', L}
+    ']': {write: ' ', L}
+    ' ': {R: toansright}
+  toansright:
+    ' ': R
+    'N': {R: cleanright}
+    'Y': {R: cleanright}
+  cleanright: # очистка справа от ответа
+    Y: R
+    N: R
+    '(': {write: ' ', R}
+    '{': {write: ' ', R}
+    '[': {write: ' ', R}
+    '$': {write: ' ', R}
+    ')': {write: ' ', R}
+    '}': {write: ' ', R}
+    ']': {write: ' ', R}
+    ' ': {L: answer}
+  answer: # приходим к ответу
+    ' ': L
+    N: {R: done}
+    Y: {R: done}
+  done:
