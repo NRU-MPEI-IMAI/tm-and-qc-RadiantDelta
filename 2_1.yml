@@ -1,0 +1,75 @@
+input: '012'
+blank: ' '
+start state: begin0
+table:
+  begin0:
+    0 : R
+    2: {write: N, L: cleanleft} 
+    1 : {write: 'a', L: toleft0} # дошли до единиц помечаем
+    ' ': {write: Y, L: cleanleft} # случай пустой строки
+  change1toa: # цикл удаления 0 и смены 1 на а
+    0 : R
+    a: R
+    1 : {write: 'a', L: toleft0}# зацикл. удал-е 0 и смену 1 # на а
+    2: {L: checkchange1toa} # дошли до 2-к проверяем на корректность
+    ' ': {write: N, L: cleanleft}
+  toleft0: # идем к 0 слева
+    0: L
+    ' ': {R: delete0} # удаляем его
+    a: L
+  delete0: # после удаления 0 идем до 1
+    0: {write: ' ', R: change1toa}
+    a: {write: N,R: cleanleft}
+  checkchange1toa: # проверка корректности смены 1 на а
+    a: L
+    1: {write: N, L: cleanleft}
+    0: {write: N, L: cleanleft}
+    2: {write: N, L: cleanleft}
+    ' ': {R: begin1} # все корректно начинаем еще цикл
+  begin1: # доходим до 2-к и аналогично меняем 2 на b 
+    a : R
+    0: {write: N, L: cleanleft}
+    1: {write: N, L: cleanleft}
+    2 : {write: 'b', L: tolefta} # затем идем до левого конца # строки с а
+  change2tob: #доходим до 2  # цикл удаления a и смены 2 на b
+    b: R
+    a: R
+    2 : {write: 'b', L: tolefta} # смена 2 на b
+    1: {write: N, L: cleanleft}
+    0: {write: N, L: cleanleft}
+    ' ' : {L: checkchange2tob} # дошли до конца строки справа
+  tolefta: # идем до левого конца  строки с а
+    a: L
+    b: L
+    ' ': {R: deletea} # удаляем а
+  deletea: # удаление а
+    a: {write: ' ', R: change2tob} # зацикл. удал-е а и смену 2   на b
+    b: {write: N,R: cleanleft}
+  checkchange2tob: # проверка корректности смены 2 на b
+    b: L
+    a: {write: N, L: cleanleft}
+    1: {write: N, L: cleanleft}
+    ' ' : {write: Y, R: cleanleft} # введенное корректно
+  cleanleft: # очистка слева от ответа
+    a: L
+    b: L
+    1: L
+    2: L
+    0: L
+    N: L
+    Y: L
+    ' ': {R: cleanright}
+  cleanright: # очистка справа от ответа
+    Y: R
+    N: R
+    a: {write: ' ',R}
+    b: {write: ' ',R}
+    1: {write: ' ',R}
+    2: {write: ' ',R}
+    0: {write: ' ',R}
+    ' ': {L: answer}
+  answer: # приходим к ответу
+    ' ': L
+    N: {R: done}
+    Y: {R: done}
+  done:
