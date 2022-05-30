@@ -1,0 +1,259 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[margin=3cm]{geometry}
+\usepackage{paralist}
+\usepackage{amsthm, amsmath, amsfonts, amssymb}
+\usepackage{mathtools} % \mathclap
+\usepackage{bm}
+\usepackage{dsfont}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{comment}
+\usepackage{xcolor, colortbl}
+\usepackage{xifthen, xspace}
+\usepackage{caption, subcaption}
+\usepackage{lscape}
+\usepackage{braket}
+\usepackage{epigraph}
+\usepackage{sectsty}
+\usepackage{listings}
+\usepackage{graphicx}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\title{Теоретические модели вычислений \\
+ДЗ №3: Машины Тьюринга и квантовые вычисления}
+
+\author{Игумнов Олег}
+
+\date{1 мая 2022 года}
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Машины Тьюринга}
+
+Работу требуется выполнять в системе \url{turingmachine.io}. \\\\
+Для сдачи заданий 1-2 требуется прикрепить файлы YAML с исходным кодом проекта. Каждый файлы должен иметь наименование задание\_пункт.yml, к примеру 1\_1.yml для первой задачи первого задания. \\\\
+
+\subsection{Операции с числами}
+
+Реализуйте машины Тьюринга, которые позволяют выполнять следующие операции:
+\begin{enumerate}
+    \item Сложение двух унарных чисел (1 балла)
+    
+    Алгоритм: заменяем плюс на 1, и удаляем последний символ
+    
+    \item Умножение унарных чисел (1 балл)
+    
+    Алгоритм: сначала ставим в конце флаг для результата (=), затем
+    копируем число справа до тех пор пока не кончатся единицы левого числа
+    
+\end{enumerate}
+
+
+\subsection{Операции с языками и символами}
+
+Реализуйте машины Тьюринга, которые позволяют выполнять следующие операции:
+\begin{enumerate}
+    \item Принадлежность к языку $L = \{ 0^n1^n2^n \}, n \ge 0$ (0.5 балла)
+    
+    Алгоритм: учитываем случай n=0, будем ходить по строке сначала удаляя нули и заменяя единицы на символ а, затем, учитывая, что символов а столько же, сколько было нулей будем удалять символы а и заменять двойки на символ б, при этом будут совершаться проверки на соблюдение порядка следования символов
+    
+    \item Проверка соблюдения правильности скобок в строке (минимум 3 вида скобок) (0.5 балла)
+    
+    Алгоритм:учитываем случай пустого слова, ищем правую скобку, затем парную ей левую, заменяем обе на символ, возвращаемся в начало опять ищем правую скобку и тд.
+    
+    \item Поиск минимального по длине слова в строке (слова состоят из символов 1 и 0 и разделены пробелом) (1 балл)
+    
+    Алгоритм: поочередно заменяем символы в каждом слове, то слово, после которого будет обнаружен пробел и есть искомое, помечаем его и удаляем лишнее, после возвращаем ему нормальный вид
+\end{enumerate}
+
+
+\section{Квантовые вычисления}
+
+Для выполнения заданий по квантовым вычислениям требуется QDK. Его можно скачать здесь: \url{https://docs.microsoft.com/en-us/azure/quantum/install-overview-qdk}. 
+\\\\
+Но можно использовать любой пакет, типа \url{https://qiskit.org/}. 
+\\\\
+В качестве решения задачи надо предоставить схему алгоритма для частного случая при фиксированном количестве кубитов и фиксированных состояниях. 
+
+
+\subsection{Генерация суперпозиций 1 (1 балл)}
+
+Дано $N$ кубитов ($1 \le N \le 8$) в нулевом состоянии $\Ket{0\dots0}$. Также дана некоторая последовательность битов, которое задаёт ненулевое базисное состояние размера $N$. Задача получить суперпозицию нулевого состояния и заданного.
+
+Частный случай
+
+$$\Ket{S} = \frac{1}{\sqrt2}(\Ket{000} +\Ket{101})$$
+
+
+
+ см. рис 1. 2.1
+ 
+код:
+\begin{lstlisting}
+operation Solve (qs: Qubit[], bits: Bool[]) : () 
+{
+    body 
+    {
+        H(qs[0]);  
+        for (i in 1..Length(qs) - 1)
+        {
+
+            if (bits[i]) 
+            {
+                CNOT(qs[0], qs[i]);
+            }
+        }
+    }
+}
+
+\end{lstlisting}
+
+\begin{figure}[h]
+\centering
+\caption{2.1}
+\includegraphics[scale=0.9]{31.png}
+
+\end{figure}
+
+\subsection{Различение состояний 1 (1 балл)}
+
+Дано $N$ кубитов ($1 \le N \le 8$), которые могут быть в одном из двух состояний:
+
+Пусть N=3
+
+$$\Ket{GHZ} = \frac{1}{\sqrt2}(\Ket{000} +\Ket{111})$$
+$$\Ket{W} = \frac{1}{\sqrt 3}(\Ket{100}+\Ket{010} +\Ket{001})$$
+
+Требуется выполнить необходимые преобразования, чтобы точно различить эти два состояния. Возвращать $0$, если первое состояние и 1, если второе. 
+\\\\
+код:
+\begin{lstlisting}
+operation Solve (qs: Qubit[]) : Int
+{
+    body 
+    {
+        mutable countOnes = 0;
+        for (i in 0..Length(qs) - 1)
+        {
+            if (M(qs[i]) == One)
+            {
+                set counter = counter + 1;
+            }
+        }
+        if (counter == 1)
+        {
+            return 1;
+        }
+        return 0;
+    }
+}
+
+\end{lstlisting}
+
+
+
+
+
+
+
+
+
+
+\subsection{Различение состояний 2 (2 балла)}
+
+Дано $2$ кубита, которые могут быть в одном из двух состояний:
+
+$$\Ket{S_0} = \frac{1}{2}(\Ket{00} + \Ket{01} + \Ket{10} + \Ket{11})$$
+$$\Ket{S_1} = \frac{1}{2}(\Ket{00} - \Ket{01} + \Ket{10} - \Ket{11})$$
+$$\Ket{S_2} = \frac{1}{2}(\Ket{00} + \Ket{01} - \Ket{10} - \Ket{11})$$
+$$\Ket{S_3} = \frac{1}{2}(\Ket{00} - \Ket{01} - \Ket{10} + \Ket{11})$$
+
+
+Требуется выполнить необходимые преобразования, чтобы точно различить эти четыре состояния. Возвращать требуется индекс состояния (от $0$ до $3$). 
+\\\\
+код:
+\begin{lstlisting}
+operation Solve (qs: Qubit[]) : Int
+    {
+        body 
+        {
+			H(qs[0]);
+			H(qs[1]);
+			if (M(qs[0]) == Zero) 
+			{
+				if (M(qs[1]) == Zero)
+				{
+					return 0;
+				}
+				else
+				{
+					return 1;
+				}
+			}
+			else
+			{
+				if (M(qs[1]) == Zero)
+				{
+					return 2;
+				}
+				else
+				{
+					return 3;
+				}
+			}
+        }
+    }
+
+\end{lstlisting}
+
+
+\subsection{Написание оракула 1 (2 балла)}
+
+Требуется реализовать квантовый оракул на $N$ кубитах ($1 \le N \le 8$), который реализует следующую функцию: $f(\pmb{x}) = (\pmb{b}\pmb{x}) \mod 2$, где  $\pmb{b} \in \{0,1\}^N$ вектор битов и  $\pmb{x}$ вектор кубитов. Выход функции записать в кубит $\pmb{y}$. Количество кубитов $N$ ($1 \le N \le 8$). 
+\\\\
+код:
+\begin{lstlisting}
+operation Solve (x: Qubit[], y: Qubit, b: Int[]) : ()
+{
+    body 
+    {
+        Reset(y);
+        for (i in 0..Length(x) - 1)
+        {
+            if (b[i] == 1) {
+                CNOT(x[i], y);
+            }
+        }
+    }
+}
+
+\end{lstlisting}
+
+схема для входных данных [1 0 1 1]
+
+
+
+\begin{figure}[h]
+\centering
+\caption{2.4}
+\includegraphics[scale=0.9]{34.png}
+
+\end{figure}
+
+\end{document}
